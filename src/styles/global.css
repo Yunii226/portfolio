@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-tech-black text-tech-titanium font-sans;
+  }
+}
+
+@layer components {
+  .metallic-card {
+    @apply bg-tech-gray-deep border border-tech-gray rounded-lg overflow-hidden transition-all duration-300;
+    background: linear-gradient(145deg, #1a1a1a, #222);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .metallic-card:hover {
+    @apply border-tech-steel;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+  }
+
+  .tech-text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-tech-titanium via-tech-silver to-tech-steel;
+  }
+}
+
+.ascii-container {
+  font-family: 'Fira Code', 'JetBrains Mono', monospace;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}

@@ -1,0 +1,24 @@
+{
+  "name": "unai-portfolio",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^4.16.18",
+    "@astrojs/react": "^3.6.3",
+    "@astrojs/tailwind": "^5.1.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.17",
+    "framer-motion": "^11.18.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

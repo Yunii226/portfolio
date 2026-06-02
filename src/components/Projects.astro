@@ -1,0 +1,64 @@
+---
+const projects = [
+  {
+    title: 'English With Alex',
+    tag: 'Mobile App / Education',
+    description: 'Aplicación diccionario para estudiar inglés con búsqueda rápida, favoritos y modo práctica. Incluye estadísticas de repaso diario.',
+    stack: ['Android', 'Jetpack Compose', 'SQLite'],
+    link: 'https://github.com/Yunii226'
+  }
+];
+---
+
+<section id="projects" class="py-24 px-4 max-w-6xl mx-auto">
+  <div class="flex items-center gap-4 mb-16">
+    <h2 class="text-3xl font-bold tech-text-gradient">03_DEPLOYED.MODULES</h2>
+    <div class="flex-grow h-[1px] bg-tech-gray"></div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-12">
+    {projects.map((project) => (
+      <div class="metallic-card flex flex-col md:flex-row gap-8 p-8 relative group overflow-hidden">
+        <div class="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+          <pre class="ascii-container text-[10px] leading-tight">
+{`
+   _______
+  /      /|
+ /      / |
+/______/  |
+|      |  |
+|      |  /
+|______| /
+`}
+          </pre>
+        </div>
+
+        <div class="w-full md:w-1/3 aspect-video bg-tech-black border border-tech-gray rounded flex items-center justify-center text-tech-steel font-mono text-sm">
+          [ PREVIEW_IMAGE_HOLDER ]
+        </div>
+
+        <div class="flex-grow flex flex-col justify-between">
+          <div>
+            <span class="text-tech-steel font-mono text-xs uppercase tracking-widest">{project.tag}</span>
+            <h3 class="text-3xl font-bold text-tech-titanium mt-2 mb-4 group-hover:text-white transition-colors">{project.title}</h3>
+            <p class="text-tech-silver text-lg leading-relaxed mb-6">
+              {project.description}
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-6">
+            <div class="flex flex-wrap gap-2">
+              {project.stack.map((s) => (
+                <span class="text-xs font-mono text-tech-steel">#{s}</span>
+              ))}
+            </div>
+            <a href={project.link} target="_blank" class="flex items-center gap-2 text-tech-titanium hover:underline font-bold">
+              GITHUB_REPO 
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>

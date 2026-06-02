@@ -1,0 +1,38 @@
+---
+const skills = [
+  { category: 'Lenguajes', items: ['Java', 'Kotlin', 'JavaScript', 'Python'] },
+  { category: 'Backend', items: ['.NET', 'Node.js', 'Spring Boot'] },
+  { category: 'Frontend', items: ['React', 'HTML5', 'CSS3', 'Bootstrap'] },
+  { category: 'Móvil', items: ['Android', 'Jetpack Compose'] },
+  { category: 'Datos', items: ['SQL', 'Oracle'] },
+  { category: 'Herramientas', items: ['Git/GitHub', 'Power Automate', 'VS Code'] },
+];
+---
+
+<section id="skills" class="py-24 px-4 bg-tech-gray-deep/30">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex items-center gap-4 mb-16">
+      <div class="flex-grow h-[1px] bg-tech-gray"></div>
+      <h2 class="text-3xl font-bold tech-text-gradient">02_SYSTEM.SPECS</h2>
+      <div class="flex-grow h-[1px] bg-tech-gray"></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {skills.map((skill) => (
+        <div class="metallic-card p-8 group">
+          <h3 class="text-xl font-bold text-tech-silver mb-6 font-mono flex items-center gap-2">
+            <span class="text-tech-steel">></span> {skill.category}
+          </h3>
+          <div class="flex flex-wrap gap-3">
+            {skill.items.map((item) => (
+              <div class="flex items-center gap-2 px-3 py-1 bg-tech-black border border-tech-gray group-hover:border-tech-steel transition-colors">
+                <div class="w-1 h-1 bg-tech-silver"></div>
+                <span class="text-sm font-medium">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
