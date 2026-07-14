@@ -1,0 +1,65 @@
+---
+import type { ImageMetadata } from 'astro';
+import { strings, type Lang } from '../i18n/strings';
+import AsciiPortrait from './AsciiPortrait';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = strings[lang].about;
+
+// PICTURE GAP #1 — drop portrait.(jpg|png|webp) into src/assets/ and it appears here.
+const portraits = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/portrait.{png,jpg,jpeg,webp}',
+  { eager: true }
+);
+const portrait = Object.values(portraits)[0]?.default;
+
+const placeholderAscii = ` .----------.
+ |  ______  |
+ | |(o)(o)| |
+ | |  __  | |
+ | |_\\__/_| |
+ '----------'`;
+---
+
+<section id="about" class="py-28 px-4">
+  <div class="max-w-5xl mx-auto">
+    <div class="reveal">
+      <p class="section-tag mb-3">{t.tag}</p>
+      <h2 class="rgb-split font-display font-black text-4xl md:text-6xl tracking-tight mb-14 w-fit">{t.title}</h2>
+    </div>
+
+    <div class="grid md:grid-cols-[320px_1fr] gap-12 items-start">
+      <div class="reveal w-full max-w-[320px]" style="--rd: 100ms">
+        {
+          portrait ? (
+            <AsciiPortrait client:visible src={portrait.src} alt="Unai Guerra Matas" hoverLabel={t.portraitHover} />
+          ) : (
+            <div class="img-slot aspect-square">
+              <pre class="font-mono text-xs leading-tight opacity-60">{placeholderAscii}</pre>
+              <span class="font-mono text-[10px] tracking-[0.15em] text-muted">{t.portraitHint}</span>
+            </div>
+          )
+        }
+      </div>
+
+      <div class="reveal" style="--rd: 200ms">
+        <p class="text-xl md:text-2xl leading-relaxed font-light">{t.bio}</p>
+        <p class="mt-4 font-serif italic text-xl opacity-85">{t.bioAside}</p>
+
+        <dl class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-px bg-line border border-line">
+          {
+            t.stats.map((s) => (
+              <div class="bg-bg p-5 transition-colors duration-500">
+                <dt class="font-mono text-[10px] tracking-[0.25em] text-muted">{s.key}</dt>
+                <dd class="mt-1 font-display font-bold text-lg">{s.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,19 +1,30 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        'tech-black': '#0a0a0a',
-        'tech-gray-deep': '#1a1a1a',
-        'tech-gray': '#2a2a2a',
-        'tech-steel': '#4a4a4a',
-        'tech-silver': '#a0a0a0',
-        'tech-titanium': '#e0e0e0',
+        // theme-driven tokens (see global.css :root / .dark)
+        bg: 'var(--bg)',
+        fg: 'var(--fg)',
+        muted: 'var(--muted)',
+        line: 'var(--line)',
+        card: 'var(--card)',
+        accent: 'var(--accent)',
+        accent2: 'var(--accent2)',
+        accent3: 'var(--accent3)',
+        green: 'var(--green)',
+        // fixed anchors (tooltips, toasts always dark-on-light-accent)
+        paper: '#E8E6E1',
+        ink: '#141412',
+        night: '#0B0B0E',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['Fira Code', 'JetBrains Mono', 'monospace'],
+        display: ['Archivo', 'system-ui', 'sans-serif'],
+        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+        mono: ['"JetBrains Mono"', 'Consolas', 'monospace'],
+        pixel: ['"Press Start 2P"', 'monospace'],
       },
     },
   },

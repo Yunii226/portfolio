@@ -1,0 +1,86 @@
+---
+import { strings, type Lang } from '../i18n/strings';
+import AsciiTerrain from './AsciiTerrain';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = strings[lang].hero;
+const ticker = [...t.ticker, ...t.ticker];
+---
+
+<section id="top" class="relative min-h-screen flex flex-col overflow-hidden">
+  <div class="absolute inset-x-0 bottom-0 h-[62vh]">
+    <AsciiTerrain client:load />
+  </div>
+
+  <div class="relative z-10 flex-grow flex flex-col items-center justify-center px-4 pt-24 pb-[30vh] text-center">
+    <p class="font-mono text-[11px] tracking-[0.3em] uppercase text-muted mb-6">{t.eyebrow}</p>
+
+    <h1
+      id="hero-name"
+      class="chroma-text font-display font-black leading-[0.9] tracking-tight text-[13vw] md:text-[9.5vw] select-none"
+      style="font-variation-settings: 'wdth' 125;"
+    >
+      {t.name}
+    </h1>
+
+    <div class="mt-6 flex items-center gap-4">
+      <span class="h-px w-10 bg-line" aria-hidden="true"></span>
+      <p class="font-mono text-sm md:text-base tracking-[0.25em]">{t.role}</p>
+      <span class="h-px w-10 bg-line" aria-hidden="true"></span>
+    </div>
+
+    <p class="mt-5 font-serif italic text-xl md:text-2xl opacity-85">{t.tagline}</p>
+
+    <div class="mt-10 flex flex-wrap justify-center gap-4">
+      <a
+        href="#projects"
+        class="font-mono text-sm font-bold bg-fg text-bg px-7 py-4 hover:bg-accent transition-colors"
+      >
+        {t.cta1} ↓
+      </a>
+      <a
+        href="#contact"
+        class="font-mono text-sm border border-fg px-7 py-4 hover:bg-fg hover:text-bg transition-colors"
+      >
+        {t.cta2}
+      </a>
+    </div>
+  </div>
+
+  <!-- ticker -->
+  <div class="relative z-10 border-y border-line bg-bg overflow-hidden py-3" aria-hidden="true">
+    <div class="marquee-track flex w-max gap-8 font-mono text-[13px] font-bold tracking-[0.15em] text-fg">
+      {ticker.map((item) => (
+        <span class="flex items-center gap-8">
+          {item} <span class="text-accent">+++</span>
+        </span>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  // Headline width compresses as you scroll away — Archivo variable width axis.
+  const name = document.getElementById('hero-name');
+  if (name) {
+    let ticking = false;
+    const update = () => {
+      const p = Math.min(window.scrollY / window.innerHeight, 1);
+      name.style.fontVariationSettings = `'wdth' ${125 - p * 55}`;
+      ticking = false;
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true }
+    );
+  }
+</script>

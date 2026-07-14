@@ -1,0 +1,33 @@
+---
+import { strings, type Lang } from '../i18n/strings';
+import Layout from '../layouts/Layout.astro';
+import Hud from './Hud.astro';
+import Hero from './Hero.astro';
+import About from './About.astro';
+import Experience from './Experience.astro';
+import Skills from './Skills.astro';
+import Projects from './Projects.astro';
+import Contact from './Contact.astro';
+import GameSystems from './GameSystems';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = strings[lang];
+---
+
+<Layout title={t.meta.title} description={t.meta.description} lang={lang}>
+  <Hud lang={lang} />
+
+  <main>
+    <Hero lang={lang} />
+    <About lang={lang} />
+    <Experience lang={lang} />
+    <Skills lang={lang} />
+    <Projects lang={lang} />
+    <Contact lang={lang} />
+  </main>
+
+  <GameSystems client:idle konamiMessage={t.konami} />
+</Layout>

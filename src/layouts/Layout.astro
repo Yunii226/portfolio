@@ -3,25 +3,57 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
+  description: string;
+  lang: 'es' | 'en';
 }
 
-const { title } = Astro.props;
+const { title, description, lang } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="Portfolio de Unai Guerra Matas - Desarrollador de Software" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="alternate" hreflang="es" href="/" />
+    <link rel="alternate" hreflang="en" href="/en/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;700&family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Theme before paint: saved choice wins, otherwise system preference -->
+    <script is:inline>
+      (() => {
+        const saved = localStorage.getItem('theme');
+        const dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.classList.toggle('dark', dark);
+      })();
+    </script>
   </head>
-  <body class="selection:bg-tech-silver selection:text-tech-black">
+  <body>
     <slot />
+
+    <script>
+      // Scroll reveal: .reveal elements slide in once when they enter the viewport.
+      const els = document.querySelectorAll<HTMLElement>('.reveal');
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+      );
+      els.forEach((el) => io.observe(el));
+    </script>
   </body>
 </html>

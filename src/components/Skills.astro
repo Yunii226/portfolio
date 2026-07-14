@@ -1,38 +1,75 @@
 ---
-const skills = [
-  { category: 'Lenguajes', items: ['Java', 'Kotlin', 'JavaScript', 'Python'] },
-  { category: 'Backend', items: ['.NET', 'Node.js', 'Spring Boot'] },
-  { category: 'Frontend', items: ['React', 'HTML5', 'CSS3', 'Bootstrap'] },
-  { category: 'Móvil', items: ['Android', 'Jetpack Compose'] },
-  { category: 'Datos', items: ['SQL', 'Oracle'] },
-  { category: 'Herramientas', items: ['Git/GitHub', 'Power Automate', 'VS Code'] },
-];
+import { strings, type Lang } from '../i18n/strings';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = strings[lang].skills;
+
+// rarity accents ride the theme vars so they stay readable in both modes
+const rarityColor: Record<string, string> = {
+  common: 'border-line text-muted',
+  rare: 'border-[var(--accent3)] text-[var(--accent3)]',
+  epic: 'border-[var(--accent2)] text-[var(--accent2)]',
+  legendary: 'border-[var(--accent)] text-[var(--accent)]',
+  cursed: 'border-[var(--green)] text-[var(--green)]',
+};
+const rarityText: Record<string, string> = {
+  common: 'text-paper/60',
+  rare: 'text-[#8C9AFF]',
+  epic: 'text-[#FF4D9D]',
+  legendary: 'text-[#FF5A1F]',
+  cursed: 'text-[#6FA57F]',
+};
 ---
 
-<section id="skills" class="py-24 px-4 bg-tech-gray-deep/30">
+<section id="skills" class="py-28 px-4">
   <div class="max-w-6xl mx-auto">
-    <div class="flex items-center gap-4 mb-16">
-      <div class="flex-grow h-[1px] bg-tech-gray"></div>
-      <h2 class="text-3xl font-bold tech-text-gradient">02_SYSTEM.SPECS</h2>
-      <div class="flex-grow h-[1px] bg-tech-gray"></div>
+    <div class="reveal">
+      <p class="section-tag mb-3">{t.tag}</p>
+      <div class="flex flex-wrap items-baseline justify-between gap-4 mb-14">
+        <h2 class="rgb-split font-display font-black text-4xl md:text-6xl tracking-tight">{t.title}</h2>
+        <p class="font-serif italic text-lg opacity-85">{t.note}</p>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {skills.map((skill) => (
-        <div class="metallic-card p-8 group">
-          <h3 class="text-xl font-bold text-tech-silver mb-6 font-mono flex items-center gap-2">
-            <span class="text-tech-steel">></span> {skill.category}
-          </h3>
-          <div class="flex flex-wrap gap-3">
-            {skill.items.map((item) => (
-              <div class="flex items-center gap-2 px-3 py-1 bg-tech-black border border-tech-gray group-hover:border-tech-steel transition-colors">
-                <div class="w-1 h-1 bg-tech-silver"></div>
-                <span class="text-sm font-medium">{item}</span>
-              </div>
-            ))}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        t.categories.map((cat, i) => (
+          <div class="reveal" style={`--rd: ${(i % 3) * 90}ms`}>
+            <div class="border border-line bg-card p-6 h-full hover:border-accent/40 transition-colors">
+              <h3 class="font-mono text-xs tracking-[0.25em] text-muted mb-5 uppercase">
+                <span class="text-accent">▸</span> {cat.name}
+              </h3>
+              <ul class="flex flex-wrap gap-2">
+                {cat.items.map((item) => (
+                  <li class="relative group/item">
+                    <button
+                      type="button"
+                      class={`px-3 py-2 border font-mono text-sm bg-bg hover:bg-card transition-colors ${rarityColor[item.rarity]}`}
+                      title={item.tip}
+                    >
+                      {item.name}
+                    </button>
+                    <div
+                      role="tooltip"
+                      class="pointer-events-none absolute bottom-full left-0 mb-2 w-56 z-20 opacity-0 translate-y-1 transition-all duration-150 group-hover/item:opacity-100 group-hover/item:translate-y-0 group-focus-within/item:opacity-100 group-focus-within/item:translate-y-0"
+                    >
+                      <div class="bg-night border border-paper/40 p-3 shadow-xl">
+                        <span class={`font-pixel text-[8px] block mb-2 ${rarityText[item.rarity]}`}>
+                          {t.rarities[item.rarity]}
+                        </span>
+                        <span class="font-mono text-xs text-paper/90 leading-relaxed">{item.tip}</span>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      }
     </div>
   </div>
 </section>

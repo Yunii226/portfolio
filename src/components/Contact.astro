@@ -1,0 +1,63 @@
+---
+import { strings, type Lang } from '../i18n/strings';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = strings[lang].contact;
+---
+
+<footer id="contact" class="relative py-28 px-4 overflow-hidden">
+  <pre
+    aria-hidden="true"
+    class="absolute -bottom-8 -right-6 font-mono text-[140px] leading-none opacity-[0.04] pointer-events-none select-none">&gt;_</pre>
+
+  <div class="relative max-w-4xl mx-auto text-center">
+    <div class="reveal">
+      <p class="section-tag mb-3 justify-center flex items-center">{t.tag}</p>
+      <h2 class="rgb-split font-display font-black text-4xl md:text-6xl tracking-tight mb-4 mx-auto w-fit">{t.title}</h2>
+      <p class="font-serif italic text-xl opacity-85 mb-14">{t.subtitle}</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-16">
+      {
+        t.links.map((link, i) => (
+          <a
+            href={link.url}
+            target="_blank"
+            rel="noopener"
+            class="reveal group border border-fg p-7 text-left hover:bg-fg hover:text-bg hover:-translate-y-1 transition-all duration-300"
+            style={`--rd: ${100 + i * 90}ms`}
+          >
+            <span class="font-mono text-[10px] tracking-[0.3em] text-muted group-hover:text-accent block mb-2 transition-colors">
+              {link.label}
+            </span>
+            <span class="font-display font-bold break-all">{link.value}</span>
+            <span class="block mt-4 font-mono text-xs opacity-0 group-hover:opacity-100 transition-opacity text-accent">
+              → {link.value.includes('@') ? 'mailto' : 'https'}
+            </span>
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="reveal font-mono text-[10px] tracking-[0.25em] text-muted uppercase space-y-2" style="--rd: 300ms">
+      <p>
+        {t.stats.session}: <span id="session-time">0:00</span> · {t.stats.cookies}
+      </p>
+      <p>{t.stats.copyright}</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const el = document.getElementById('session-time');
+  if (el) {
+    const start = Date.now();
+    setInterval(() => {
+      const s = Math.floor((Date.now() - start) / 1000);
+      el.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    }, 1000);
+  }
+</script>

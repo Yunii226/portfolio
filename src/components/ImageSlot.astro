@@ -1,0 +1,36 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+/**
+ * A picture gap. Renders the image when it exists,
+ * otherwise an intentional dashed placeholder with an ASCII doodle
+ * and instructions on where to drop the file.
+ */
+interface Props {
+  image?: ImageMetadata;
+  alt: string;
+  hint: string;
+  ascii?: string;
+  class?: string;
+}
+
+const {
+  image,
+  alt,
+  hint,
+  ascii = `  ___\n / _ \\\n| (_) |\n \\___/\n [IMG]`,
+  class: className = '',
+} = Astro.props;
+---
+
+{
+  image ? (
+    <Image src={image} alt={alt} class={`object-cover w-full h-full ${className}`} />
+  ) : (
+    <div class={`img-slot w-full h-full ${className}`}>
+      <pre class="font-mono text-[10px] leading-tight opacity-50">{ascii}</pre>
+      <span class="font-mono text-[10px] tracking-[0.15em] opacity-60">{hint}</span>
+    </div>
+  )
+}

@@ -1,66 +1,61 @@
 ---
-const experiences = [
-  {
-    date: '03/2026 - 05/2026',
-    company: 'AYCE LABORYTAX',
-    role: 'Prácticas - Desarrollo de Software',
-    description: [
-      'Diseño y desarrollo de aplicaciones internas con .NET.',
-      'Automatización de tareas recurrentes con Power Automate.',
-      'Análisis de requisitos y propuestas de mejora.',
-    ],
-    tech: ['.NET', 'Power Automate']
-  },
-  {
-    date: '05/2025',
-    company: 'Kanzan Tech (OutSystems)',
-    role: 'Prácticas - Desarrollo low-code',
-    description: [
-      'Desarrollo y mantenimiento de aplicaciones con OutSystems.',
-      'Trabajo con formularios, lógica y consumo de APIs REST.',
-    ],
-    tech: ['OutSystems', 'APIs REST']
-  }
-];
+import { strings, type Lang } from '../i18n/strings';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = strings[lang].experience;
 ---
 
-<section id="experience" class="py-24 px-4 max-w-4xl mx-auto">
-  <div class="flex items-center gap-4 mb-12">
-    <h2 class="text-3xl font-bold tech-text-gradient">01_EXPERIENCE.LOG</h2>
-    <div class="flex-grow h-[1px] bg-tech-gray"></div>
-  </div>
+<section id="experience" class="py-28 px-4">
+  <div class="max-w-4xl mx-auto">
+    <div class="reveal">
+      <p class="section-tag mb-3">{t.tag}</p>
+      <h2 class="rgb-split font-display font-black text-4xl md:text-6xl tracking-tight mb-14 w-fit">{t.title}</h2>
+    </div>
 
-  <div class="space-y-12">
-    {experiences.map((exp) => (
-      <div class="relative pl-8 border-l border-tech-gray group">
-        <div class="absolute -left-[5px] top-0 w-[9px] h-[9px] bg-tech-silver rounded-full group-hover:scale-150 transition-transform"></div>
-        
-        <div class="metallic-card p-6">
-          <div class="flex flex-wrap justify-between items-start gap-2 mb-4">
-            <div>
-              <h3 class="text-2xl font-bold text-tech-titanium">{exp.company}</h3>
-              <p class="text-tech-silver font-mono italic">{exp.role}</p>
+    <!-- current focus -->
+    <div class="reveal border border-accent/60 p-6 mb-12 flex flex-wrap items-baseline gap-x-6 gap-y-2" style="--rd: 100ms">
+      <span class="font-mono text-xs tracking-[0.25em] text-accent">
+        {t.now.label} <span class="blink">▮</span>
+      </span>
+      <span class="font-display font-bold text-2xl">{t.now.name}</span>
+      <span class="font-serif italic text-lg opacity-85 w-full md:w-auto">{t.now.note}</span>
+    </div>
+
+    <div class="space-y-10">
+      {
+        t.entries.map((exp, i) => (
+          <article class="reveal relative pl-8 border-l border-line group" style={`--rd: ${150 + i * 100}ms`}>
+            <div class="absolute -left-[5px] top-1 w-[9px] h-[9px] bg-accent group-hover:scale-150 transition-transform" />
+            <div class="border border-line bg-card p-6 md:p-8 hover:border-accent/50 transition-colors">
+              <div class="flex flex-wrap justify-between items-baseline gap-2 mb-5">
+                <div>
+                  <h3 class="font-display font-black text-2xl md:text-3xl">{exp.company}</h3>
+                  <p class="font-serif italic text-lg opacity-85 mt-1">{exp.role}</p>
+                </div>
+                <span class="font-mono text-sm text-muted">{exp.date}</span>
+              </div>
+
+              <ul class="space-y-2 mb-6">
+                {exp.log.map((line) => (
+                  <li class="flex gap-3 opacity-85">
+                    <span class="text-accent font-mono">»</span> {line}
+                  </li>
+                ))}
+              </ul>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="font-mono text-[10px] tracking-[0.25em] text-muted">{t.stackLabel}:</span>
+                {exp.stack.map((item) => (
+                  <span class="px-3 py-1 border border-line font-mono text-xs">[{item}]</span>
+                ))}
+              </div>
             </div>
-            <span class="text-tech-steel font-mono text-sm">{exp.date}</span>
-          </div>
-          
-          <ul class="list-none space-y-2 mb-6">
-            {exp.description.map((item) => (
-              <li class="text-tech-silver/80 flex gap-2">
-                <span class="text-tech-steel">»</span> {item}
-              </li>
-            ))}
-          </ul>
-
-          <div class="flex flex-wrap gap-2">
-            {exp.tech.map((t) => (
-              <span class="px-3 py-1 bg-tech-gray text-tech-silver text-xs font-mono rounded">
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    ))}
+          </article>
+        ))
+      }
+    </div>
   </div>
 </section>

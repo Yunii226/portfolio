@@ -1,0 +1,50 @@
+---
+import { strings, type Lang } from '../i18n/strings';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = strings[lang].hud;
+---
+
+<header class="fixed top-0 inset-x-0 z-40 bg-bg/75 backdrop-blur-md border-b border-line">
+  <nav
+    class="flex items-center justify-between px-4 md:px-8 py-3 font-mono text-[11px] tracking-[0.2em]"
+    aria-label="Main"
+  >
+    <a href="#top" class="font-bold hover:text-accent transition-colors">▲ {t.brand}</a>
+
+    <div class="hidden md:flex items-center gap-6">
+      {t.nav.map((item) => (
+        <a href={`#${item.id}`} class="text-muted hover:text-fg transition-colors">{item.label}</a>
+      ))}
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button
+        id="theme-toggle"
+        type="button"
+        aria-label={t.themeLabel}
+        class="border border-line w-8 h-8 grid place-items-center hover:border-accent hover:text-accent transition-colors text-sm"
+      >
+        <span class="dark:hidden" aria-hidden="true">☀</span>
+        <span class="hidden dark:inline" aria-hidden="true">☾</span>
+      </button>
+      <a
+        href={t.langTarget}
+        class="border border-line px-2 h-8 grid place-items-center hover:border-accent hover:text-accent transition-colors"
+        aria-label={`Switch language to ${t.langLabel}`}
+      >
+        {t.langLabel}
+      </a>
+    </div>
+  </nav>
+</header>
+
+<script>
+  document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    const dark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+  });
+</script>
