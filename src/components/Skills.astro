@@ -44,7 +44,7 @@ const rarityText: Record<string, string> = {
               </h3>
               <ul class="flex flex-wrap gap-2">
                 {cat.items.map((item) => (
-                  <li class="relative group/item">
+                  <li class="relative tip-host">
                     <button
                       type="button"
                       class={`px-3 py-2 border font-mono text-sm bg-bg hover:bg-card transition-colors ${rarityColor[item.rarity]}`}
@@ -52,10 +52,7 @@ const rarityText: Record<string, string> = {
                     >
                       {item.name}
                     </button>
-                    <div
-                      role="tooltip"
-                      class="pointer-events-none absolute bottom-full left-0 mb-2 w-56 z-20 opacity-0 translate-y-1 transition-all duration-150 group-hover/item:opacity-100 group-hover/item:translate-y-0 group-focus-within/item:opacity-100 group-focus-within/item:translate-y-0"
-                    >
+                    <div role="tooltip" class="tip">
                       <div class="bg-night border border-paper/40 p-3 shadow-xl">
                         <span class={`font-pixel text-[8px] block mb-2 ${rarityText[item.rarity]}`}>
                           {t.rarities[item.rarity]}
@@ -73,3 +70,54 @@ const rarityText: Record<string, string> = {
     </div>
   </div>
 </section>
+
+<script>
+  // A tooltip anchored to a chip near the right edge runs off screen and widens
+  // the page. `opacity: 0` still occupies layout, so this has to be corrected up
+  // front for every tooltip — not just the one being pointed at — or the page
+  // gets a horizontal scrollbar before anyone touches anything.
+  const EDGE = 12;
+
+  const hosts = Array.from(document.querySelectorAll<HTMLElement>('.tip-host'));
+
+  const place = (host: HTMLElement) => {
+    const tip = host.querySelector<HTMLElement>('.tip');
+    if (!tip) return;
+    // clientWidth, not innerWidth: when content overflows, mobile browsers widen
+    // innerWidth to fit it, so clamping against it just re-measures our own
+    // overflow and never converges. clientWidth is the real layout viewport.
+    const vw = document.documentElement.clientWidth;
+    tip.style.setProperty('--tip-dx', '0px');
+    const r = tip.getBoundingClientRect();
+    let dx = 0;
+    if (r.left < EDGE) dx = EDGE - r.left;
+    else if (r.right > vw - EDGE) dx = vw - EDGE - r.right;
+    tip.style.setProperty('--tip-dx', `${dx}px`);
+  };
+
+  const placeAll = () => hosts.forEach(place);
+
+  for (const host of hosts) {
+    host.addEventListener('pointerenter', () => place(host));
+    host.addEventListener('focusin', () => place(host));
+  }
+
+  placeAll();
+  // Chip positions move once the webfonts swap in, and again on rotate.
+  document.fonts?.ready.then(placeAll);
+
+  let t = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(t);
+    t = window.setTimeout(placeAll, 120);
+  });
+
+  // Touch has no pointerleave: a tapped chip keeps focus, so its tooltip would
+  // stay open until something else is tapped. Blur on any outside tap.
+  document.addEventListener('pointerdown', (e) => {
+    const active = document.activeElement;
+    if (!(active instanceof HTMLElement)) return;
+    const host = active.closest('.tip-host');
+    if (host && !host.contains(e.target as Node)) active.blur();
+  });
+</script>

@@ -9,9 +9,13 @@ import React, { useEffect, useRef } from 'react';
  * reduced motion.
  */
 
-const CELL_W = 10;
-const CELL_H = 15;
-const FONT = '13px "JetBrains Mono", monospace';
+// Cell size drives cost: every cell below a ridge is one fillText per frame.
+// Phones get a coarser grid — fewer draws, and the ASCII stays legible at the
+// smaller canvas rather than turning to mush.
+const DESKTOP_CELL = { w: 10, h: 15, font: '13px "JetBrains Mono", monospace' };
+const MOBILE_CELL = { w: 14, h: 20, font: '17px "JetBrains Mono", monospace' };
+const MOBILE_BP = 768;
+const MOBILE_FPS = 30;
 const DENSITY = ' .:-=+*#%@';
 
 function makeNoise(seed: number) {
@@ -71,6 +75,9 @@ const AsciiTerrain: React.FC = () => {
 
     let isDark = document.documentElement.classList.contains('dark');
 
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+    let cell = DESKTOP_CELL;
     let cols = 0;
     let rows = 0;
     let raf = 0;
@@ -84,9 +91,10 @@ const AsciiTerrain: React.FC = () => {
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      cols = Math.ceil(width / CELL_W);
-      rows = Math.ceil(height / CELL_H);
-      ctx.font = FONT;
+      cell = window.innerWidth < MOBILE_BP ? MOBILE_CELL : DESKTOP_CELL;
+      cols = Math.ceil(width / cell.w);
+      rows = Math.ceil(height / cell.h);
+      ctx.font = cell.font;
       ctx.textBaseline = 'top';
     };
 
@@ -101,33 +109,41 @@ const AsciiTerrain: React.FC = () => {
       const orbCy = rows * 0.22;
       const orbR = Math.min(cols, rows) * 0.09;
 
+      // The orb occupies a known box — scanning the whole grid for it wasted
+      // cols*rows hypot calls per frame.
+      const aspect = cell.w / cell.h;
+      const boxX0 = Math.max(Math.floor(orbCx - orbR / aspect - 1), 0);
+      const boxX1 = Math.min(Math.ceil(orbCx + (orbR * 1.6) / aspect + 1), cols);
+      const boxY0 = Math.max(Math.floor(orbCy - orbR - 1), 0);
+      const boxY1 = Math.min(Math.ceil(orbCy + orbR + 1), rows);
+
       if (isDark) {
         // stars first, twinkling
         ctx.fillStyle = pal.star;
         for (const s of STARS) {
           const tw = 0.35 + 0.65 * Math.abs(Math.sin(time * 0.7 + s.phase));
           ctx.globalAlpha = tw;
-          ctx.fillText(s.ch, Math.floor(s.x * cols) * CELL_W, Math.floor(s.y * rows) * CELL_H);
+          ctx.fillText(s.ch, Math.floor(s.x * cols) * cell.w, Math.floor(s.y * rows) * cell.h);
         }
         ctx.globalAlpha = 1;
         // crescent moon: inside the disc but outside an offset disc
         ctx.fillStyle = pal.orb;
-        for (let y = 0; y < rows; y++) {
-          for (let x = 0; x < cols; x++) {
-            const d = Math.hypot((x - orbCx) * (CELL_W / CELL_H), y - orbCy);
-            const d2 = Math.hypot((x - orbCx - orbR * 0.55) * (CELL_W / CELL_H), y - orbCy + orbR * 0.2);
+        for (let y = boxY0; y < boxY1; y++) {
+          for (let x = boxX0; x < boxX1; x++) {
+            const d = Math.hypot((x - orbCx) * aspect, y - orbCy);
+            const d2 = Math.hypot((x - orbCx - orbR * 0.55) * aspect, y - orbCy + orbR * 0.2);
             if (d < orbR && d2 > orbR * 0.82) {
-              ctx.fillText(d2 > orbR * 1.15 ? '@' : '*', x * CELL_W, y * CELL_H);
+              ctx.fillText(d2 > orbR * 1.15 ? '@' : '*', x * cell.w, y * cell.h);
             }
           }
         }
       } else {
         // sun
         ctx.fillStyle = pal.orb;
-        for (let y = 0; y < rows; y++) {
-          for (let x = 0; x < cols; x++) {
-            const d = Math.hypot((x - orbCx) * (CELL_W / CELL_H), y - orbCy);
-            if (d < orbR) ctx.fillText(d < orbR * 0.55 ? '@' : '*', x * CELL_W, y * CELL_H);
+        for (let y = boxY0; y < boxY1; y++) {
+          for (let x = boxX0; x < boxX1; x++) {
+            const d = Math.hypot((x - orbCx) * aspect, y - orbCy);
+            if (d < orbR) ctx.fillText(d < orbR * 0.55 ? '@' : '*', x * cell.w, y * cell.h);
           }
         }
       }
@@ -145,27 +161,38 @@ const AsciiTerrain: React.FC = () => {
           for (let y = Math.max(ridgeY, 0); y < rows; y++) {
             const depth = (y - ridgeY) / Math.max(rows - ridgeY, 1);
             const ch = DENSITY[Math.min(Math.floor(depth * 5) + 3, DENSITY.length - 1)];
-            ctx.fillText(y === ridgeY ? '^' : ch, x * CELL_W, y * CELL_H);
+            ctx.fillText(y === ridgeY ? '^' : ch, x * cell.w, y * cell.h);
           }
           if (li === 2 && ridgeY > 1 && x % 7 === 3) {
             ctx.fillStyle = pal.pine;
-            ctx.fillText('Y', x * CELL_W, (ridgeY - 1) * CELL_H);
+            ctx.fillText('Y', x * cell.w, (ridgeY - 1) * cell.h);
             ctx.fillStyle = pal.layers[li];
           }
         }
       });
     };
 
+    let last = 0;
+
     const loop = (t: number) => {
-      draw(t / 1000);
+      // Uncapped rAF on a phone burns battery for motion nobody can resolve at
+      // this cell size. Desktop keeps the full frame rate.
+      const minDelta = window.innerWidth < MOBILE_BP ? 1000 / MOBILE_FPS : 0;
+      if (t - last >= minDelta) {
+        last = t;
+        draw(t / 1000);
+      }
       raf = requestAnimationFrame(loop);
     };
 
     const start = () => {
-      if (!running) {
-        running = true;
-        raf = requestAnimationFrame(loop);
+      if (running) return;
+      if (reduceMotion.matches) {
+        draw(0); // one static frame: the ridges are decoration, not information
+        return;
       }
+      running = true;
+      raf = requestAnimationFrame(loop);
     };
     const stop = () => {
       running = false;
@@ -175,24 +202,41 @@ const AsciiTerrain: React.FC = () => {
     resize();
     start();
 
+    // Honour a mid-session change to the OS setting.
+    const onMotionChange = () => {
+      stop();
+      start();
+    };
+    reduceMotion.addEventListener('change', onMotionChange);
+
     const onMove = (e: MouseEvent) => {
       const r = canvas.getBoundingClientRect();
-      mouseGoal = (e.clientX - r.left) / CELL_W;
+      mouseGoal = (e.clientX - r.left) / cell.w;
     };
     const onLeave = () => {
       mouseGoal = -1;
       mouseX = -1;
     };
 
+    // With the loop stopped under reduced motion, nothing repaints on its own —
+    // theme and size changes have to redraw the static frame themselves.
+    const repaintIfStill = () => {
+      if (!running) draw(0);
+    };
+
     // follow theme toggles live
     const mo = new MutationObserver(() => {
       isDark = document.documentElement.classList.contains('dark');
+      repaintIfStill();
     });
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
     const io = new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : stop()));
     io.observe(canvas);
-    const ro = new ResizeObserver(resize);
+    const ro = new ResizeObserver(() => {
+      resize();
+      repaintIfStill();
+    });
     ro.observe(canvas);
     canvas.addEventListener('mousemove', onMove);
     canvas.addEventListener('mouseleave', onLeave);
@@ -202,6 +246,7 @@ const AsciiTerrain: React.FC = () => {
       mo.disconnect();
       io.disconnect();
       ro.disconnect();
+      reduceMotion.removeEventListener('change', onMotionChange);
       canvas.removeEventListener('mousemove', onMove);
       canvas.removeEventListener('mouseleave', onLeave);
     };

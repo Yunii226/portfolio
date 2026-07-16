@@ -71,19 +71,47 @@
     animation: chroma-drift 9s ease-in-out infinite;
   }
 
-  /* RGB split on hover — section titles */
+  /* RGB split on hover — section titles. Gated: on touch a "hover" sticks
+     until you tap elsewhere, so the split would just look like a rendering bug. */
   .rgb-split {
     transition: text-shadow 0.15s ease;
   }
-  .rgb-split:hover {
-    text-shadow:
-      -3px 0 0 var(--chroma-b),
-      3px 0 0 var(--chroma-c);
+  @media (hover: hover) {
+    .rgb-split:hover {
+      text-shadow:
+        -3px 0 0 var(--chroma-b),
+        3px 0 0 var(--chroma-c);
+    }
   }
 
   /* Image slot placeholder — dashed gap waiting for a picture */
   .img-slot {
     @apply border-2 border-dashed border-line flex flex-col items-center justify-center gap-3 text-center p-6;
+  }
+
+  /* Skill tooltip. Width is viewport-bounded; --tip-dx is set by Skills.astro
+     to nudge it back on screen when a chip sits near the viewport edge. */
+  .tip {
+    --tip-dx: 0px;
+    @apply pointer-events-none absolute bottom-full left-0 z-20 mb-2;
+    width: min(14rem, calc(100vw - 2rem));
+    /* The clamp rides margin-left, not transform: transform is transitioned, so
+       measuring right after resetting it would read a mid-animation position and
+       compute a wrong offset. margin-left applies instantly. */
+    margin-left: var(--tip-dx);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .tip-host:focus-within .tip {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (hover: hover) {
+    .tip-host:hover .tip {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* Mono eyebrow label */
@@ -192,5 +220,28 @@
   animation-timing-function: linear;
   animation-fill-mode: both;
   will-change: transform;
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion. Kill the ambient loops (marquee, chroma drift, blink) and
+   land every reveal in its final state — the content must still be readable.
+   The konami cake rain is opt-in, so it keeps animating.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .marquee-track,
+  .chroma-text,
+  .blink {
+    animation: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 

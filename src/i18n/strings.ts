@@ -24,6 +24,8 @@ const es = {
     langTarget: '/en/',
     langLabel: 'EN',
     themeLabel: 'Cambiar tema',
+    menuLabel: 'Abrir menú',
+    menuCloseLabel: 'Cerrar menú',
   },
   hero: {
     eyebrow: 'PORTFOLIO — 2026',
@@ -54,6 +56,7 @@ const es = {
     ],
     portraitHint: 'AÑADE portrait.jpg → src/assets/',
     portraitHover: 'HOVER = ASCII',
+    portraitTap: 'TOCA = ASCII',
   },
   experience: {
     tag: '02 — TRAYECTORIA',
@@ -208,6 +211,8 @@ const en: typeof es = {
     langTarget: '/',
     langLabel: 'ES',
     themeLabel: 'Toggle theme',
+    menuLabel: 'Open menu',
+    menuCloseLabel: 'Close menu',
   },
   hero: {
     eyebrow: 'PORTFOLIO — 2026',
@@ -238,6 +243,7 @@ const en: typeof es = {
     ],
     portraitHint: 'ADD portrait.jpg → src/assets/',
     portraitHover: 'HOVER = ASCII',
+    portraitTap: 'TAP = ASCII',
   },
   experience: {
     tag: '02 — TRACK RECORD',

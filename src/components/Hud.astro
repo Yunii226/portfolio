@@ -13,7 +13,7 @@ const t = strings[lang].hud;
     class="flex items-center justify-between px-4 md:px-8 py-3 font-mono text-[11px] tracking-[0.2em]"
     aria-label="Main"
   >
-    <a href="#top" class="font-bold hover:text-accent transition-colors">▲ {t.brand}</a>
+    <a href="#top" class="font-bold hover:text-accent transition-colors py-2">▲ {t.brand}</a>
 
     <div class="hidden md:flex items-center gap-6">
       {t.nav.map((item) => (
@@ -21,25 +21,69 @@ const t = strings[lang].hud;
       ))}
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 md:gap-3">
       <button
         id="theme-toggle"
         type="button"
         aria-label={t.themeLabel}
-        class="border border-line w-8 h-8 grid place-items-center hover:border-accent hover:text-accent transition-colors text-sm"
+        class="border border-line w-11 h-11 md:w-8 md:h-8 grid place-items-center hover:border-accent hover:text-accent transition-colors text-sm"
       >
         <span class="dark:hidden" aria-hidden="true">☀</span>
         <span class="hidden dark:inline" aria-hidden="true">☾</span>
       </button>
       <a
         href={t.langTarget}
-        class="border border-line px-2 h-8 grid place-items-center hover:border-accent hover:text-accent transition-colors"
+        class="border border-line px-3 h-11 md:h-8 grid place-items-center hover:border-accent hover:text-accent transition-colors"
         aria-label={`Switch language to ${t.langLabel}`}
       >
         {t.langLabel}
       </a>
+      <button
+        id="menu-toggle"
+        type="button"
+        aria-label={t.menuLabel}
+        data-close-label={t.menuCloseLabel}
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        class="md:hidden border border-line w-11 h-11 grid place-items-center hover:border-accent hover:text-accent transition-colors"
+      >
+        <span class="relative block w-4 h-3" aria-hidden="true">
+          <span
+            data-bar="top"
+            class="absolute inset-x-0 top-0 h-px bg-current transition-transform duration-200"></span>
+          <span
+            data-bar="mid"
+            class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-current transition-opacity duration-200"
+          ></span>
+          <span
+            data-bar="bot"
+            class="absolute inset-x-0 bottom-0 h-px bg-current transition-transform duration-200"></span>
+        </span>
+      </button>
     </div>
   </nav>
+
+  <!-- Mobile drawer. Collapsed via max-height so it animates and stays in flow.
+       Opaque bg: the header's 75% tint is fine for a thin bar, but the hero
+       headline reads straight through a full drawer. -->
+  <div
+    id="mobile-menu"
+    class="md:hidden bg-bg overflow-hidden max-h-0 transition-[max-height] duration-300 ease-out border-t border-transparent"
+  >
+    <ul class="flex flex-col px-4 pb-4 pt-2 font-mono text-xs tracking-[0.2em]">
+      {t.nav.map((item) => (
+        <li>
+          <a
+            href={`#${item.id}`}
+            data-menu-link
+            class="block py-4 border-b border-line text-muted hover:text-fg transition-colors"
+          >
+            <span class="text-accent mr-3">▸</span>{item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
 </header>
 
 <script>
@@ -47,4 +91,52 @@ const t = strings[lang].hud;
     const dark = document.documentElement.classList.toggle('dark');
     localStorage.setItem('theme', dark ? 'dark' : 'light');
   });
+
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+
+  if (toggle && menu) {
+    const openLabel = toggle.getAttribute('aria-label') ?? '';
+    const closeLabel = toggle.dataset.closeLabel ?? openLabel;
+    const bars = {
+      top: toggle.querySelector<HTMLElement>('[data-bar="top"]'),
+      mid: toggle.querySelector<HTMLElement>('[data-bar="mid"]'),
+      bot: toggle.querySelector<HTMLElement>('[data-bar="bot"]'),
+    };
+
+    const setOpen = (open: boolean) => {
+      // Measure so the drawer animates to its real height instead of a guess.
+      menu.style.maxHeight = open ? `${menu.scrollHeight}px` : '0px';
+      menu.classList.toggle('border-line', open);
+      menu.classList.toggle('border-transparent', !open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? closeLabel : openLabel);
+      bars.top?.classList.toggle('translate-y-[5px]', open);
+      bars.top?.classList.toggle('rotate-45', open);
+      bars.mid?.classList.toggle('opacity-0', open);
+      bars.bot?.classList.toggle('-translate-y-[5px]', open);
+      bars.bot?.classList.toggle('-rotate-45', open);
+    };
+
+    const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+
+    toggle.addEventListener('click', () => setOpen(!isOpen()));
+
+    // Close after picking a destination, and on Escape.
+    menu.querySelectorAll('[data-menu-link]').forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen()) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    // A drawer left open while resizing to desktop would reserve dead space.
+    const desktop = matchMedia('(min-width: 768px)');
+    desktop.addEventListener('change', (e) => {
+      if (e.matches && isOpen()) setOpen(false);
+    });
+  }
 </script>

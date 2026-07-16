@@ -35,7 +35,13 @@ const placeholderAscii = ` .----------.
       <div class="reveal w-full max-w-[320px]" style="--rd: 100ms">
         {
           portrait ? (
-            <AsciiPortrait client:visible src={portrait.src} alt="Unai Guerra Matas" hoverLabel={t.portraitHover} />
+            <AsciiPortrait
+              client:visible
+              src={portrait.src}
+              alt="Unai Guerra Matas"
+              hoverLabel={t.portraitHover}
+              tapLabel={t.portraitTap}
+            />
           ) : (
             <div class="img-slot aspect-square">
               <pre class="font-mono text-xs leading-tight opacity-60">{placeholderAscii}</pre>
