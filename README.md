@@ -1,51 +1,48 @@
-# Astro Starter Kit: Minimal
+# Unai Guerra — Portfolio
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Personal portfolio for Unai Guerra Matas, a cross-platform software developer. Built as a single-page, bilingual site with a game-world (`WORLD_01`) visual language: a HUD-style chrome, rarity-tagged skill cards, and a procedural ASCII mountain range that drifts behind the hero.
 
-<!-- ASTRO:REMOVE:START -->
+**Stack:** [Astro](https://astro.build) · [Tailwind CSS](https://tailwindcss.com) · React islands · TypeScript
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
+## Features
 
-<!-- ASTRO:REMOVE:END -->
+- **Bilingual (ES/EN).** All copy lives in `src/i18n/strings.ts`. Spanish is served at `/`, English at `/en/`.
+- **Signature ASCII terrain** (`src/components/AsciiTerrain.tsx`) — three parallax ridge layers driven by value noise, slow drift, a cursor equalizer that lifts ridges under the mouse, and a light/dark sun/moon with a twinkling star field. Pauses while offscreen; caps frame rate on mobile.
+- **Game-world HUD** — HUD chrome, ASCII portrait, and rarity-tagged skill/system cards.
+- **Light & dark themes**, toggled live via a `dark` class on `<html>`.
+- **Responsive**, tuned for mobile (coarser ASCII grid, capped FPS).
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## Project structure
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/
+├── assets/            # Images (optimized at build)
+├── components/        # Astro sections + React islands (.tsx)
+│   ├── AsciiTerrain.tsx    # Procedural ASCII mountains (canvas)
+│   ├── AsciiPortrait.tsx   # ASCII portrait island
+│   ├── GameSystems.tsx     # Rarity-tagged system cards
+│   ├── Hero.astro / Hud.astro / World.astro ...
+├── i18n/strings.ts    # All ES/EN copy
+├── layouts/Layout.astro
+├── pages/
+│   ├── index.astro         # ES  → /
+│   └── en/index.astro      # EN  → /en/
+└── styles/global.css
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Commands
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Run from the project root:
 
-Any static assets, like images, can be placed in the `public/` directory.
+| Command           | Action                                    |
+| :---------------- | :---------------------------------------- |
+| `npm install`     | Install dependencies                      |
+| `npm run dev`     | Dev server at `localhost:4321`            |
+| `npm run build`   | Production build to `./dist/`             |
+| `npm run preview` | Preview the production build locally      |
 
-## 🧞 Commands
+> **Note:** On this machine Node/npm live at `C:\Program Files\nodejs` and may not be on the shell `PATH`. Add it first, or call the binaries by full path.
 
-All commands are run from the root of the project, from a terminal:
+## Adding or editing content
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Change copy in `src/i18n/strings.ts` — the `es` and `en` objects mirror each other, so update both. Section layout lives in the matching `src/components/*.astro` files.

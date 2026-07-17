@@ -75,8 +75,6 @@ const AsciiTerrain: React.FC = () => {
 
     let isDark = document.documentElement.classList.contains('dark');
 
-    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
-
     let cell = DESKTOP_CELL;
     let cols = 0;
     let rows = 0;
@@ -187,10 +185,6 @@ const AsciiTerrain: React.FC = () => {
 
     const start = () => {
       if (running) return;
-      if (reduceMotion.matches) {
-        draw(0); // one static frame: the ridges are decoration, not information
-        return;
-      }
       running = true;
       raf = requestAnimationFrame(loop);
     };
@@ -202,13 +196,6 @@ const AsciiTerrain: React.FC = () => {
     resize();
     start();
 
-    // Honour a mid-session change to the OS setting.
-    const onMotionChange = () => {
-      stop();
-      start();
-    };
-    reduceMotion.addEventListener('change', onMotionChange);
-
     const onMove = (e: MouseEvent) => {
       const r = canvas.getBoundingClientRect();
       mouseGoal = (e.clientX - r.left) / cell.w;
@@ -218,7 +205,7 @@ const AsciiTerrain: React.FC = () => {
       mouseX = -1;
     };
 
-    // With the loop stopped under reduced motion, nothing repaints on its own —
+    // While offscreen the loop is stopped, so nothing repaints on its own —
     // theme and size changes have to redraw the static frame themselves.
     const repaintIfStill = () => {
       if (!running) draw(0);
@@ -246,7 +233,6 @@ const AsciiTerrain: React.FC = () => {
       mo.disconnect();
       io.disconnect();
       ro.disconnect();
-      reduceMotion.removeEventListener('change', onMotionChange);
       canvas.removeEventListener('mousemove', onMove);
       canvas.removeEventListener('mouseleave', onLeave);
     };
