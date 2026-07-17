@@ -10,8 +10,12 @@ interface Props {
 }
 
 const CHARS = '@%#*+=-:. ';
-const W = 90;
-const H = 90;
+// A monospace glyph cell is taller than wide (~0.6 advance-width per line-height),
+// so a square grid renders vertically stretched. Sample fewer rows than columns to
+// pre-compensate: cols * charAspect ≈ rows keeps the drawn art square.
+const CHAR_ASPECT = 0.55;
+const W = 110;
+const H = Math.round(W * CHAR_ASPECT);
 
 const AsciiPortrait: React.FC<Props> = ({ src, alt, hoverLabel, tapLabel }) => {
   const [ascii, setAscii] = useState('');
@@ -38,7 +42,12 @@ const AsciiPortrait: React.FC<Props> = ({ src, alt, hoverLabel, tapLabel }) => {
     img.onload = () => {
       canvas.width = W;
       canvas.height = H;
-      ctx.drawImage(img, 0, 0, W, H);
+      // Center-crop the source to a square before sampling so the ASCII matches
+      // the hover <img>'s object-cover framing instead of squashing the photo.
+      const s = Math.min(img.width, img.height);
+      const sx = (img.width - s) / 2;
+      const sy = (img.height - s) / 2;
+      ctx.drawImage(img, sx, sy, s, s, 0, 0, W, H);
       const data = ctx.getImageData(0, 0, W, H).data;
       let out = '';
       for (let y = 0; y < H; y++) {
