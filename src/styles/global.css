@@ -223,7 +223,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Reduced motion. Kill the ambient loops (marquee, chroma drift, blink) and
+   Reduced motion. Kill the ambient loops (chroma drift, blink) and
    land every reveal in its final state — the content must still be readable.
    The konami cake rain is opt-in, so it keeps animating.
 --------------------------------------------------------------------------- */
@@ -232,7 +232,6 @@
     scroll-behavior: auto;
   }
 
-  .marquee-track,
   .chroma-text,
   .blink {
     animation: none;

@@ -8,9 +8,9 @@ export interface SkillItem {
 
 const es = {
   meta: {
-    title: 'Unai Guerra — Desarrollador de Software',
+    title: 'Unai Guerra Matas — Desarrollador de Software',
     description:
-      'Portfolio de Unai Guerra Matas. Desarrollador de software multiplataforma: escritorio, web y móvil.',
+      'Portfolio de Unai Guerra Matas, desarrollador de software multiplataforma: escritorio, web y móvil (.NET, Android). Automatización de procesos e IA.',
   },
   hud: {
     brand: 'UNAI.G',
@@ -195,9 +195,9 @@ const es = {
 
 const en: typeof es = {
   meta: {
-    title: 'Unai Guerra — Software Developer',
+    title: 'Unai Guerra Matas — Software Developer',
     description:
-      'Portfolio of Unai Guerra Matas. Cross-platform software developer: desktop, web and mobile.',
+      'Portfolio of Unai Guerra Matas, cross-platform software developer: desktop, web and mobile (.NET, Android). Process automation and AI.',
   },
   hud: {
     brand: 'UNAI.G',
