@@ -41,8 +41,6 @@ Run from the project root:
 | `npm run build`   | Production build to `./dist/`             |
 | `npm run preview` | Preview the production build locally      |
 
-> **Note:** On this machine Node/npm live at `C:\Program Files\nodejs` and may not be on the shell `PATH`. Add it first, or call the binaries by full path.
-
 ## Adding or editing content
 
 Change copy in `src/i18n/strings.ts` — the `es` and `en` objects mirror each other, so update both. Section layout lives in the matching `src/components/*.astro` files.
