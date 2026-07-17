@@ -76,6 +76,11 @@ const AsciiTerrain: React.FC = () => {
     let isDark = document.documentElement.classList.contains('dark');
 
     let cell = DESKTOP_CELL;
+    // The canvas is transparent and sits behind the centered hero text. On wide
+    // screens the orb lives far right, clear of the narrow text column; on a
+    // phone the text spans full width, so the orb would collide with it. Mountains
+    // still read fine at any width, so mobile keeps the ridges and drops the sky.
+    let showSky = true;
     let cols = 0;
     let rows = 0;
     let raf = 0;
@@ -89,7 +94,9 @@ const AsciiTerrain: React.FC = () => {
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      cell = window.innerWidth < MOBILE_BP ? MOBILE_CELL : DESKTOP_CELL;
+      const mobile = window.innerWidth < MOBILE_BP;
+      showSky = !mobile;
+      cell = mobile ? MOBILE_CELL : DESKTOP_CELL;
       cols = Math.ceil(width / cell.w);
       rows = Math.ceil(height / cell.h);
       ctx.font = cell.font;
@@ -115,7 +122,7 @@ const AsciiTerrain: React.FC = () => {
       const boxY0 = Math.max(Math.floor(orbCy - orbR - 1), 0);
       const boxY1 = Math.min(Math.ceil(orbCy + orbR + 1), rows);
 
-      if (isDark) {
+      if (showSky && isDark) {
         // stars first, twinkling
         ctx.fillStyle = pal.star;
         for (const s of STARS) {
@@ -135,7 +142,7 @@ const AsciiTerrain: React.FC = () => {
             }
           }
         }
-      } else {
+      } else if (showSky) {
         // sun
         ctx.fillStyle = pal.orb;
         for (let y = boxY0; y < boxY1; y++) {
